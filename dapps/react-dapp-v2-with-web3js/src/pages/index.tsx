@@ -146,6 +146,55 @@ export default function App() {
     };
   };
 
+  const testBatchRequest: () => Promise<IFormattedRpcResponse> = async () => {
+    if (!web3Provider) {
+      throw new Error("web3Provider not connected");
+    }
+    const [address] = await web3Provider.eth.getAccounts();
+    const batch = await client?.request({
+      topic: client?.session.keys[0],
+      request: {
+        method: 'batch_request',
+        params: [
+          {
+            chainId: 'eip155:42',
+            method: "personal_sign",
+            params: [
+              encoding.utf8ToHex('test signing message 1', true),
+              address,
+            ]
+          },
+          {
+            chainId: 'eip155:42',
+            method: "personal_sign",
+            params: [
+              encoding.utf8ToHex('test signing message 2', true),
+              address,
+            ]
+          },
+          {
+            chainId: 'eip155:42',
+            method: "personal_sign",
+            params: [
+              encoding.utf8ToHex('test signing message 3', true),
+              address,
+            ]
+          }
+        ]
+      },
+      chainId: 'eip155:42'
+    })
+    console.log('rq', batch)
+
+    // const valid = verifyEip155MessageSignature(msg, signature, address);
+    return {
+      method: "batch_request",
+      address,
+      result: batch,
+      valid: true
+    } as IFormattedRpcResponse;
+  };
+
   const testSignMessage: () => Promise<IFormattedRpcResponse> = async () => {
     if (!web3Provider) {
       throw new Error("web3Provider not connected");
@@ -153,6 +202,7 @@ export default function App() {
     const msg = "hello world";
     const hexMsg = encoding.utf8ToHex(msg, true);
     const [address] = await web3Provider.eth.getAccounts();
+
     const signature = await web3Provider.eth.personal.sign(hexMsg, address, "");
     const valid = verifyEip155MessageSignature(msg, signature, address);
     return {
@@ -244,6 +294,7 @@ export default function App() {
       { method: "personal_sign", callback: wrapRpcRequest(testSignMessage) },
       { method: "eth_sign (standard)", callback: wrapRpcRequest(testEthSign) },
       { method: "eth_signTypedData", callback: wrapRpcRequest(testSignTypedData) },
+      { method: "batch_request", callback: wrapRpcRequest(testBatchRequest) },
     ];
   };
 

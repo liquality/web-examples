@@ -196,6 +196,7 @@ export function ClientContextProvider({ children }: { children: ReactNode | Reac
               "eth_sign",
               "personal_sign",
               "eth_signTypedData",
+              "batch_request"
             ],
             chains: [`eip155:${chainId}`],
             events: ["chainChanged", "accountsChanged"],

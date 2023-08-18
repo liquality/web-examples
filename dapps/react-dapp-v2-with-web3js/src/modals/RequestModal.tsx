@@ -31,7 +31,7 @@ const RequestModal = (props: RequestModalProps) => {
             {Object.keys(result).map(key => (
               <SRow key={key}>
                 <SKey>{key}</SKey>
-                <SValue>{result[key].toString()}</SValue>
+                <SValue>{ JSON.stringify(result[key])}</SValue>
               </SRow>
             ))}
           </STable>
